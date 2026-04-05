@@ -43,7 +43,8 @@ public class SecurityConfig {
                         // Endpoints publics
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/files/**").permitAll()
+                        // Après
+                        .requestMatchers("/files/uploads/**").permitAll()
 
                         // Endpoints Médecin
                         .requestMatchers("/api/analyses/en-attente").hasRole("MEDECIN")

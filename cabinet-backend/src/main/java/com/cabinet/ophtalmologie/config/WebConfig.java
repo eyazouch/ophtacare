@@ -4,15 +4,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Sert les fichiers uploadés depuis le dossier uploads/
-        // URL : http://localhost:8081/files/analyses/uuid.jpg
-        // Fichier : uploads/analyses/uuid.jpg
-        registry.addResourceHandler("/files/**")
-                .addResourceLocations("file:uploads/");
+        registry.addResourceHandler("/files/uploads/**")
+                .addResourceLocations(
+                        "file:C:/Users/Eya/Desktop/ophtacare/cabinet-backend/uploads/"
+                );
     }
 }

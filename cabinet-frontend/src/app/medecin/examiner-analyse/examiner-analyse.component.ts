@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { AnalyseService } from '../../shared/services/analyse.service';
 import { RendezVousService } from '../../shared/services/rendez-vous.service';
 import { Analyse } from '../../shared/models/models';
-import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-examiner-analyse',
@@ -34,15 +34,13 @@ import { environment } from '../../../environments/environment';
       <!-- Aperçu du fichier -->
       <div style="margin:16px 0;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;background:#f8fafc;">
 
-        <!-- Titre aperçu -->
-        <div style="padding:12px 16px;background:#f1f5f9;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;">
+        <div style="padding:12px 16px;background:#f1f5f9;border-bottom:1px solid #e2e8f0;
+                    display:flex;justify-content:space-between;align-items:center;">
           <span style="font-size:13px;font-weight:600;color:#334155;">
             <i class="fas fa-eye" style="margin-right:6px;color:#059669;"></i>
             Aperçu du fichier
           </span>
-          <a [href]="getFileUrl(analyse.fichierPath)"
-             target="_blank"
-             class="btn btn-outline btn-sm">
+          <a [href]="getFileUrl(analyse.fichierPath)" target="_blank" class="btn btn-outline btn-sm">
             <i class="fas fa-external-link-alt"></i> Ouvrir dans un nouvel onglet
           </a>
         </div>
@@ -57,39 +55,38 @@ import { environment } from '../../../environments/environment';
         </div>
 
         <!-- PDF -->
-        <div *ngIf="isPdf(analyse.fichierNom)"
-             style="padding:16px;text-align:center;">
-          <iframe [src]="getFileUrlSafe(analyse.fichierPath)"
+        <div *ngIf="isPdf(analyse.fichierNom)" style="padding:16px;">
+          <iframe [src]="getSafeUrl(analyse.fichierPath)"
                   style="width:100%;height:500px;border:none;border-radius:8px;"
                   title="Aperçu PDF">
           </iframe>
         </div>
 
-        <!-- Fichier non prévisualisable -->
+        <!-- Autre -->
         <div *ngIf="!isImage(analyse.fichierNom) && !isPdf(analyse.fichierNom)"
              style="padding:32px;text-align:center;color:#64748b;">
           <i class="fas fa-file" style="font-size:48px;display:block;margin-bottom:12px;color:#94a3b8;"></i>
           <p>Aperçu non disponible pour ce type de fichier.</p>
-          <a [href]="getFileUrl(analyse.fichierPath)"
-             target="_blank"
+          <a [href]="getFileUrl(analyse.fichierPath)" target="_blank"
              class="btn btn-primary" style="margin-top:12px;">
-            <i class="fas fa-download"></i> Télécharger le fichier
+            <i class="fas fa-download"></i> Télécharger
           </a>
         </div>
       </div>
 
       <hr style="border:none;border-top:1px solid #e2e8f0;margin:16px 0;">
 
-      <!-- Commentaire médical -->
       <div class="form-group">
-        <label><i class="fas fa-comment-medical" style="color:#059669;margin-right:6px;"></i>Commentaire médical</label>
+        <label>
+          <i class="fas fa-comment-medical" style="color:#059669;margin-right:6px;"></i>
+          Commentaire médical
+        </label>
         <textarea class="form-control"
                   [(ngModel)]="commentaires[analyse.id]"
                   placeholder="Rédigez votre avis médical..."
                   rows="3"></textarea>
       </div>
 
-      <!-- Actions -->
       <div style="display:flex;gap:12px;flex-wrap:wrap;">
         <button class="btn btn-success" (click)="examiner(analyse)">
           <i class="fas fa-check"></i> Valider — Avis envoyé
@@ -113,9 +110,13 @@ export class ExaminerAnalyseComponent implements OnInit {
   successMessage = '';
   errorMessage = '';
 
+  // ⚠️ Adapte le port si ton backend tourne sur 8080
+  private backendUrl = 'http://localhost:8081';
+
   constructor(
     private analyseService: AnalyseService,
-    private rdvService: RendezVousService
+    private rdvService: RendezVousService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void { this.loadAnalyses(); }
@@ -125,12 +126,13 @@ export class ExaminerAnalyseComponent implements OnInit {
   }
 
   getFileUrl(fichierPath: string): string {
-    // fichierPath = "uploads/analyses/uuid.jpg"
-    return `${environment.apiUrl.replace('/api', '')}/files/${fichierPath}`;
+    // fichierPath = "uploads/analyses/uuid.jpeg"
+    // URL = http://localhost:8081/files/uploads/analyses/uuid.jpeg
+    return `${this.backendUrl}/files/${fichierPath}`;
   }
 
-  getFileUrlSafe(fichierPath: string): string {
-    return this.getFileUrl(fichierPath);
+  getSafeUrl(fichierPath: string): SafeResourceUrl {
+    return this.sanitizer.bypassSecurityTrustResourceUrl(this.getFileUrl(fichierPath));
   }
 
   isImage(fichierNom: string): boolean {
@@ -150,7 +152,6 @@ export class ExaminerAnalyseComponent implements OnInit {
       <div style="padding:32px;text-align:center;color:#64748b;">
         <i class="fas fa-image" style="font-size:48px;display:block;margin-bottom:12px;color:#94a3b8;"></i>
         <p>Impossible de charger l'image.</p>
-        <p style="font-size:12px;margin-top:8px;">Vérifiez que le backend sert les fichiers statiques.</p>
       </div>`;
   }
 
