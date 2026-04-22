@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+
+  # =============================================
+  # Base de données MySQL
+  # =============================================
+  mysql:
+    image: mysql:8.0
+    container_name: ophtacare-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - ophtacare-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # =============================================
+  # Backend Spring Boot
+  # =============================================
+  backend:
+    build:
+      context: ./cabinet-backend
+      dockerfile: Dockerfile
+    container_name: ophtacare-backend
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      SERVER_PORT: 8081
+      APP_JWT_SECRET: ${JWT_SECRET}
+      APP_JWT_EXPIRATION: 86400000
+      APP_UPLOAD_DIR: /app/uploads/analyses
+    ports:
+      - "8081:8081"
+    volumes:
+      - uploads_data:/app/uploads
+    networks:
+      - ophtacare-network
+
+  # =============================================
+  # Frontend Angular (nginx)
+  # =============================================
+  frontend:
+    build:
+      context: ./cabinet-frontend
+      dockerfile: Dockerfile
+    container_name: ophtacare-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "4200:80"
+    networks:
+      - ophtacare-network
+
+# =============================================
+# Volumes persistants
+# =============================================
+volumes:
+  mysql_data:
+  uploads_data:
+
+# =============================================
+# Réseau interne
+# =============================================
+networks:
+  ophtacare-network:
+    driver: bridge

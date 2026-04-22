@@ -8,9 +8,8 @@
 
 - [Présentation](#présentation)
 - [Technologies utilisées](#technologies-utilisées)
-- [Prérequis](#prérequis)
-- [Installation et configuration](#installation-et-configuration)
-- [Lancement du projet](#lancement-du-projet)
+- [Lancement rapide avec Docker](#-lancement-rapide-avec-docker)
+- [Lancement manuel sans Docker](#-lancement-manuel-sans-docker)
 - [Comptes par défaut](#comptes-par-défaut)
 - [Fonctionnalités](#fonctionnalités)
 - [Architecture du projet](#architecture-du-projet)
@@ -48,11 +47,70 @@
 - **Font Awesome 6**
 - **Google Fonts** (Plus Jakarta Sans, DM Serif Display)
 
+### DevOps
+- **Docker & Docker Compose**
+- **Nginx** (reverse proxy frontend)
+
 ---
 
-## ✅ Prérequis
+## 🐳 Lancement rapide avec Docker
 
-Avant de lancer le projet, assurez-vous d'avoir installé :
+> ✅ **Recommandé** — Aucune installation de Java, Maven, Node ou MySQL requise. Juste Docker !
+
+### Prérequis
+
+| Outil | Téléchargement |
+|-------|---------------|
+| Docker Desktop | https://www.docker.com/products/docker-desktop/ |
+
+### Structure des fichiers Docker à placer
+
+```
+ophtacare/
+├── docker-compose.yaml          ← racine du projet
+├── init.sql                     ← racine du projet
+├── cabinet-backend/
+│   └── Dockerfile               ← dans cabinet-backend/
+└── cabinet-frontend/
+    ├── Dockerfile               ← dans cabinet-frontend/
+    ├── nginx.conf               ← dans cabinet-frontend/
+    └── src/environments/
+        └── environment.prod.ts  ← remplacer le fichier existant
+```
+
+### Lancement en 3 commandes
+
+```bash
+# 1. Cloner le projet
+git clone https://github.com/eyazouch/ophtacare.git
+cd ophtacare
+
+# 2. Lancer tous les services (MySQL + Backend + Frontend)
+docker-compose up --build
+
+# 3. Ouvrir le navigateur
+# http://localhost:4200
+```
+
+### Arrêter le projet
+
+```bash
+docker-compose down
+```
+
+### Arrêter et supprimer les données
+
+```bash
+docker-compose down -v
+```
+
+> ⚠️ `-v` supprime aussi la base de données MySQL. À utiliser avec précaution.
+
+---
+
+## 💻 Lancement manuel sans Docker
+
+### Prérequis
 
 | Outil | Version minimale | Vérification |
 |-------|-----------------|--------------|
@@ -90,12 +148,10 @@ https://dev.mysql.com/downloads/installer/
 
 ---
 
-## ⚙️ Installation et configuration
-
 ### 1. Cloner le projet
 
 ```bash
-git clone https://github.com/votre-username/ophtacare.git
+git clone https://github.com/eyazouch/ophtacare.git
 cd ophtacare
 ```
 
@@ -110,15 +166,6 @@ Créer la base de données :
 ```sql
 CREATE DATABASE cabinet_ophtalmo CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
-
-Ajuster la colonne statut (obligatoire) :
-```sql
-USE cabinet_ophtalmo;
-ALTER TABLE rendez_vous MODIFY COLUMN statut VARCHAR(30) NOT NULL;
-ALTER TABLE rendez_vous ADD COLUMN IF NOT EXISTS date_heure_alt DATETIME;
-```
-
-> ⚠️ Ces commandes SQL ne sont nécessaires qu'après le premier démarrage du backend.
 
 ### 3. Configurer le backend
 
@@ -149,26 +196,21 @@ Vérifier que le port correspond à celui du backend :
 ```typescript
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8081/api'  // Adapter si besoin
+  apiUrl: 'http://localhost:8081/api'
 };
 ```
 
----
-
-## 🚀 Lancement du projet
-
-### Démarrer le backend
+### 5. Démarrer le backend
 
 ```bash
 cd cabinet-backend
-
-# Avec Maven (CMD/Terminal)
 mvn spring-boot:run
 ```
 
 **Ou via IntelliJ IDEA :**
 - Ouvrir le projet `cabinet-backend`
 - Configurer le SDK Java 21
+- Définir le **Working Directory** sur `cabinet-backend/`
 - Clic droit sur `OphtalmologieApplication.java` → **Run**
 
 ✅ Le backend est prêt quand vous voyez :
@@ -179,17 +221,18 @@ Started OphtalmologieApplication in X seconds
 ✅ Créneaux par défaut créés
 ```
 
-> ⚠️ Après le premier démarrage, exécuter les commandes SQL de la section 2.
+> ⚠️ Après le premier démarrage, exécuter ces commandes SQL :
+> ```sql
+> USE cabinet_ophtalmo;
+> ALTER TABLE rendez_vous MODIFY COLUMN statut VARCHAR(30) NOT NULL;
+> ALTER TABLE rendez_vous ADD COLUMN IF NOT EXISTS date_heure_alt DATETIME;
+> ```
 
-### Démarrer le frontend
+### 6. Démarrer le frontend
 
 ```bash
 cd cabinet-frontend
-
-# Installer les dépendances (première fois uniquement)
 npm install
-
-# Lancer le serveur de développement
 ng serve
 ```
 
@@ -247,36 +290,43 @@ Ces comptes sont créés automatiquement au premier démarrage :
 ```
 ophtacare/
 │
-├── cabinet-backend/                    # Spring Boot API
+├── docker-compose.yaml             # Orchestration Docker
+├── init.sql                        # Initialisation MySQL
+│
+├── cabinet-backend/                # Spring Boot API
+│   ├── Dockerfile
 │   ├── src/main/java/com/cabinet/ophtalmologie/
-│   │   ├── config/                     # SecurityConfig, WebConfig, DataInitializer
-│   │   ├── controller/                 # REST Controllers
-│   │   ├── dto/                        # Data Transfer Objects
-│   │   ├── exception/                  # Gestion des erreurs
-│   │   ├── model/                      # Entités JPA
-│   │   │   └── enums/                  # Rôles, Statuts, etc.
-│   │   ├── repository/                 # Spring Data JPA
-│   │   ├── security/                   # JWT Filter, UserDetailsService
-│   │   └── service/                    # Logique métier
+│   │   ├── config/                 # SecurityConfig, WebConfig, DataInitializer
+│   │   ├── controller/             # REST Controllers
+│   │   ├── dto/                    # Data Transfer Objects
+│   │   ├── exception/              # Gestion des erreurs
+│   │   ├── model/                  # Entités JPA
+│   │   │   └── enums/              # Rôles, Statuts, etc.
+│   │   ├── repository/             # Spring Data JPA
+│   │   ├── security/               # JWT Filter, UserDetailsService
+│   │   └── service/                # Logique métier
 │   ├── src/main/resources/
-│   │   └── application.properties      # Configuration
+│   │   └── application.properties  # Configuration
 │   └── pom.xml
 │
-└── cabinet-frontend/                   # Angular SPA
+└── cabinet-frontend/               # Angular SPA
+    ├── Dockerfile
+    ├── nginx.conf
     ├── src/app/
-    │   ├── auth/                       # Login, Register
-    │   ├── patient/                    # Dashboard, RDV, Analyses, Profil
-    │   ├── medecin/                    # Dashboard, Planning, Statistiques, Dossiers
-    │   ├── secretaire/                 # Dashboard, Patients, RDV
+    │   ├── auth/                   # Login, Register
+    │   ├── patient/                # Dashboard, RDV, Analyses, Profil
+    │   ├── medecin/                # Dashboard, Planning, Statistiques, Dossiers
+    │   ├── secretaire/             # Dashboard, Patients, RDV
     │   └── shared/
-    │       ├── components/             # Sidebar
-    │       ├── guards/                 # AuthGuard
-    │       ├── interceptors/           # JWT Interceptor
-    │       ├── models/                 # Interfaces TypeScript
-    │       └── services/              # HTTP Services
+    │       ├── components/         # Sidebar
+    │       ├── guards/             # AuthGuard
+    │       ├── interceptors/       # JWT Interceptor
+    │       ├── models/             # Interfaces TypeScript
+    │       └── services/           # HTTP Services
     ├── src/environments/
-    │   └── environment.ts              # URL API backend
-    └── src/styles.scss                 # Design system global
+    │   ├── environment.ts          # Dev — URL API backend
+    │   └── environment.prod.ts     # Prod — Docker
+    └── src/styles.scss             # Design system global
 ```
 
 ---
@@ -329,7 +379,7 @@ ophtacare/
 ### Fichiers statiques
 | Méthode | URL | Accès | Description |
 |---------|-----|-------|-------------|
-| GET | `/files/analyses/{filename}` | Public | Télécharger un fichier |
+| GET | `/files/uploads/analyses/{filename}` | Public | Afficher un fichier |
 
 ---
 
@@ -350,11 +400,13 @@ ophtacare/
   - Samedi : 8h–12h
 - Les tableaux de bord se rafraîchissent automatiquement toutes les **30 secondes**
 - Les fichiers acceptés pour les analyses : **PDF, JPEG, PNG** (max 10 Mo)
+- Le **Working Directory** d'IntelliJ doit pointer vers `cabinet-backend/` pour que les uploads fonctionnent correctement
 
 ---
 
-## 👩‍💻 Auteur
-Eya Zouch
+## 👩‍💻 Auteure
+
+**Eya Zouch**
 
 Projet développé dans le cadre d'un cursus en génie logiciel / développement web full-stack.
 
