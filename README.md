@@ -404,11 +404,12 @@ ophtacare/
 
 ---
 
-## 👩‍💻 Auteure
+## 👩‍💻 Auteures
 
 **Eya Zouch**
+**Ouamyma Khlif**
 
-Projet développé dans le cadre d'un cursus en génie logiciel / développement web full-stack.
+
 
 ---
 
