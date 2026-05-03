@@ -22,6 +22,9 @@ import { SecretaireDashboardComponent } from './secretaire/dashboard/dashboard.c
 import { GestionPatientsComponent } from './secretaire/gestion-patients/gestion-patients.component';
 import { NouveauPatientComponent } from './secretaire/nouveau-patient/nouveau-patient.component';
 import { GestionRdvComponent } from './secretaire/gestion-rdv/gestion-rdv.component';
+import { NouveauRdvSecretaireComponent } from './secretaire/nouveau-rdv-secretaire/nouveau-rdv-secretaire.component';
+import { SecretairePlanningComponent } from './secretaire/planning/secretaire-planning.component';
+import { ModifierRdvComponent } from './secretaire/modifier-rdv/modifier-rdv.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -65,7 +68,11 @@ const routes: Routes = [
       { path: 'gestion-patients', component: GestionPatientsComponent },
       { path: 'nouveau-patient', component: NouveauPatientComponent },
       { path: 'gestion-rdv', component: GestionRdvComponent },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      // Dans le children de 'secretaire', ajouter :
+      { path: 'planning', component: SecretairePlanningComponent },
+      { path: 'nouveau-rdv', component: NouveauRdvSecretaireComponent },
+      { path: 'rdv/modifier/:id', component: ModifierRdvComponent }
     ]
   },
 

@@ -61,4 +61,10 @@ public class RendezVous {
 
     @OneToOne(mappedBy = "rendezVous", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Consultation consultation;
-}
+
+    @Column(name = "motif_modification", columnDefinition = "TEXT")
+    private String motifModification;
+
+    @Column(name = "motif_annulation", columnDefinition = "TEXT")
+    private String motifAnnulation;
+    }

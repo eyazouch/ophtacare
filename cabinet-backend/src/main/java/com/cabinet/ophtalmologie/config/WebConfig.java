@@ -14,7 +14,8 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/files/uploads/**")
                 .addResourceLocations(
-                        "file:C:/Users/Eya/Desktop/ophtacare/cabinet-backend/uploads/"
+                        "file:C:/OphtaCare/cabinet-backend/uploads/"
+                        
                 );
     }
 }

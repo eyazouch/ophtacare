@@ -114,4 +114,32 @@ public class RendezVousController {
         return ResponseEntity.ok(ApiResponse.success("Rendez-vous annulé",
                 rendezVousService.annulerRendezVous(id)));
     }
+
+    @PutMapping("/{id}/modifier-secretaire")
+    @PreAuthorize("hasRole('SECRETAIRE')")
+    public ResponseEntity<ApiResponse> modifierParSecretaire(
+            @PathVariable Long id,
+            @RequestBody RendezVousDTO dto) {
+
+        RendezVousDTO updated = rendezVousService.modifierRendezVous(id, dto);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Rendez-vous modifié par la secrétaire", updated)
+        );
+    }
+    @PutMapping("/{id}/annuler-secretaire")
+    @PreAuthorize("hasRole('SECRETAIRE')")
+    public ResponseEntity<ApiResponse> annulerParSecretaire(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body) {
+
+        String motif = body.get("motif");
+
+        RendezVousDTO updated = rendezVousService.annulerParSecretaire(id, motif);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Rendez-vous annulé par la secrétaire", updated)
+        );
+    }
+
 }

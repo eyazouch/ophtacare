@@ -25,4 +25,6 @@ public class RendezVousDTO {
     private Long creeParId;
     private String creeParUsername;
     private LocalDateTime dateCreation;
+    private String motifModification;
+    private String motifAnnulation;
 }

@@ -70,6 +70,10 @@ export class LoginComponent {
     this.authService.login(this.credentials).subscribe({
       next: (response) => {
         this.loading = false;
+        
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('role', response.role);
+
         const routes: Record<string, string> = {
           PATIENT: '/patient/dashboard',
           MEDECIN: '/medecin/dashboard',

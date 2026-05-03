@@ -12,5 +12,7 @@ public interface CreneauDisponibleRepository extends JpaRepository<CreneauDispon
 
     List<CreneauDisponible> findByJourSemaineAndActifTrue(JourSemaine jourSemaine);
 
+    List<CreneauDisponible> findByJourSemaineAndActifTrueOrderByHeureDebutAsc(JourSemaine jourSemaine);
+
     List<CreneauDisponible> findByActifTrue();
 }

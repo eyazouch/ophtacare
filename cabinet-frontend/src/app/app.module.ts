@@ -2,6 +2,9 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -34,6 +37,9 @@ import { SecretaireDashboardComponent } from './secretaire/dashboard/dashboard.c
 import { GestionPatientsComponent } from './secretaire/gestion-patients/gestion-patients.component';
 import { NouveauPatientComponent } from './secretaire/nouveau-patient/nouveau-patient.component';
 import { GestionRdvComponent } from './secretaire/gestion-rdv/gestion-rdv.component';
+import { NouveauRdvSecretaireComponent } from './secretaire/nouveau-rdv-secretaire/nouveau-rdv-secretaire.component';
+import { SecretairePlanningComponent } from './secretaire/planning/secretaire-planning.component';
+import { ModifierRdvComponent } from './secretaire/modifier-rdv/modifier-rdv.component';
 
 @NgModule({
   declarations: [
@@ -56,12 +62,17 @@ import { GestionRdvComponent } from './secretaire/gestion-rdv/gestion-rdv.compon
     GestionPatientsComponent,
     NouveauPatientComponent,
     GestionRdvComponent,
+    NouveauRdvSecretaireComponent,
+    SecretairePlanningComponent,
+    ModifierRdvComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    RouterModule,
+    BrowserAnimationsModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }

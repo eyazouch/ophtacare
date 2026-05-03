@@ -25,7 +25,6 @@ export class RendezVousService {
 
   create(rdv: Partial<RendezVous>): Observable<ApiResponse> { return this.http.post<ApiResponse>(this.apiUrl, rdv); }
   createUrgent(rdv: Partial<RendezVous>): Observable<ApiResponse> { return this.http.post<ApiResponse>(`${this.apiUrl}/urgent`, rdv); }
-  update(id: number, rdv: Partial<RendezVous>): Observable<ApiResponse> { return this.http.put<ApiResponse>(`${this.apiUrl}/${id}`, rdv); }
   cancel(id: number): Observable<ApiResponse> { return this.http.delete<ApiResponse>(`${this.apiUrl}/${id}`); }
   getDemandesEnAttente(): Observable<RendezVous[]> {
     return this.http.get<RendezVous[]>(`${this.apiUrl}/demandes`);
@@ -37,5 +36,9 @@ export class RendezVousService {
 
   refuser(id: number): Observable<ApiResponse> {
     return this.http.put<ApiResponse>(`${this.apiUrl}/${id}/refuser`, {});
+  }
+
+  update(id: number, rdv: Partial<RendezVous>): Observable<ApiResponse> {
+    return this.http.put<ApiResponse>(`${this.apiUrl}/${id}`, rdv);
   }
 }

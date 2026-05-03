@@ -53,11 +53,13 @@ import { AuthService } from '../../services/auth.service';
           <a routerLink="/medecin/statistiques" routerLinkActive="active"><i class="fas fa-chart-pie"></i> Statistiques</a>
         </ng-container>
 
-        <ng-container *ngIf="role === 'SECRETAIRE'">
-          <a routerLink="/secretaire/dashboard" routerLinkActive="active"><i class="fas fa-th-large"></i> Tableau de bord</a>
-          <a routerLink="/secretaire/gestion-patients" routerLinkActive="active"><i class="fas fa-users"></i> Patients</a>
-          <a routerLink="/secretaire/nouveau-patient" routerLinkActive="active"><i class="fas fa-user-plus"></i> Nouveau Patient</a>
-          <a routerLink="/secretaire/gestion-rdv" routerLinkActive="active"><i class="fas fa-calendar-check"></i> Rendez-vous</a>
+        <ng-container *ngIf=\"role === 'SECRETAIRE'\">
+          <a routerLink=\"/secretaire/dashboard\" routerLinkActive=\"active\"><i class=\"fas fa-th-large\"></i> Tableau de bord</a>
+          <a routerLink=\"/secretaire/gestion-patients\" routerLinkActive=\"active\"><i class=\"fas fa-users\"></i> Patients</a>
+          <a routerLink=\"/secretaire/nouveau-patient\" routerLinkActive=\"active\"><i class=\"fas fa-user-plus\"></i> Nouveau Patient</a>
+          <a routerLink=\"/secretaire/gestion-rdv\" routerLinkActive=\"active\"><i class=\"fas fa-calendar-check\"></i> Rendez-vous</a>
+          <a routerLink=\"/secretaire/nouveau-rdv\" routerLinkActive=\"active\"><i class=\"fas fa-calendar-plus\"></i> Nouveau RDV</a>
+          <a routerLink=\"/secretaire/planning\" routerLinkActive=\"active\"><i class=\"fas fa-calendar-week\"></i> Planning</a>
         </ng-container>
       </nav>
       <div class="sidebar-footer">

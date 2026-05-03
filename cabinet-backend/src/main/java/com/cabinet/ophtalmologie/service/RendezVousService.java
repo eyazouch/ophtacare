@@ -6,6 +6,7 @@ import com.cabinet.ophtalmologie.exception.ResourceNotFoundException;
 import com.cabinet.ophtalmologie.model.Patient;
 import com.cabinet.ophtalmologie.model.RendezVous;
 import com.cabinet.ophtalmologie.model.Utilisateur;
+import com.cabinet.ophtalmologie.model.enums.Role;
 import com.cabinet.ophtalmologie.model.enums.JourSemaine;
 import com.cabinet.ophtalmologie.model.enums.StatutRendezVous;
 import com.cabinet.ophtalmologie.repository.CreneauDisponibleRepository;
@@ -13,6 +14,7 @@ import com.cabinet.ophtalmologie.repository.PatientRepository;
 import com.cabinet.ophtalmologie.repository.RendezVousRepository;
 import com.cabinet.ophtalmologie.repository.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,15 +23,21 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Map;
+
+
+
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RendezVousService {
 
     private final RendezVousRepository rdvRepository;
     private final PatientRepository patientRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final CreneauDisponibleRepository creneauRepository;
+    private final RendezvousSuggestionService rendezvousSuggestionService;
 
     public List<RendezVousDTO> getAllRendezVous() {
         return rdvRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
@@ -106,16 +114,38 @@ public class RendezVousService {
                 .dureeMinutes(dto.getDureeMinutes() != null ? dto.getDureeMinutes() : 30)
                 .motif(dto.getMotif())
                 .urgent(false)
-                .statut(StatutRendezVous.EN_ATTENTE_APPROBATION)
+                .statut(creePar.getRole() == Role.SECRETAIRE 
+                    ? StatutRendezVous.PREVU 
+                    : StatutRendezVous.EN_ATTENTE_APPROBATION)
                 .creePar(creePar)
                 .build();
 
-        return toDTO(rdvRepository.save(rdv));
+        RendezVous saved = rdvRepository.save(rdv);
+
+        if (creePar.getRole() == Role.SECRETAIRE) {
+            try {
+                Utilisateur user = patient.getUtilisateur();
+                if (user != null && user.getEmail() != null) {
+                    emailService.envoyerConfirmationRdv(
+                        user.getEmail(),
+                        patient.getNomComplet(),
+                        saved.getDateHeure()
+                    );
+                }
+            } catch (Exception e) {
+                log.warn("Email non envoyé : {}", e.getMessage());
+            }
+        }
+
+        return toDTO(saved);
     }
 
     // Secrétaire approuve une demande en choisissant le créneau
+    private final EmailService emailService;
+
     @Transactional
     public RendezVousDTO approuverDemande(Long id, LocalDateTime dateHeureChoisie) {
+
         RendezVous rdv = rdvRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("RendezVous", id));
 
@@ -144,16 +174,54 @@ public class RendezVousService {
         rdv.setDateHeureAlt(null);
         rdv.setStatut(StatutRendezVous.PREVU);
 
+        // Envoyer l'email de confirmation
+        try {
+            Utilisateur user = rdv.getPatient().getUtilisateur();
+            if (user != null && user.getEmail() != null) {
+                emailService.envoyerConfirmationRdv(
+                    user.getEmail(),
+                    rdv.getPatient().getNomComplet(),
+                    dateHeureChoisie
+                );
+            }
+        } catch (Exception e) {
+            log.warn("Email non envoyé mais RDV approuvé : {}", e.getMessage());
+        }
+
         return toDTO(rdvRepository.save(rdv));
     }
 
     // Secrétaire refuse une demande
     @Transactional
     public RendezVousDTO refuserDemande(Long id) {
+
         RendezVous rdv = rdvRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("RendezVous", id));
+
         rdv.setStatut(StatutRendezVous.ANNULE);
-        return toDTO(rdvRepository.save(rdv));
+        rdvRepository.save(rdv);
+
+        List<String> alternatives = rendezvousSuggestionService.trouverAlternatives(
+            rdv.getDateHeure().toLocalDate()
+        );
+
+        try {
+            Utilisateur user = rdv.getPatient().getUtilisateur();
+
+            if (user != null && user.getEmail() != null && alternatives.size() >= 2) {
+
+                emailService.envoyerPropositionAlternatives(
+                        user.getEmail(),
+                        rdv.getPatient().getNomComplet(),
+                        alternatives.subList(0, 2)
+                );
+            }
+
+        } catch (Exception e) {
+            log.warn("Email alternatives non envoyé : {}", e.getMessage());
+        }
+
+        return toDTO(rdv);
     }
 
     @Transactional
@@ -259,5 +327,46 @@ public class RendezVousService {
                 .creeParUsername(rdv.getCreePar() != null ? rdv.getCreePar().getUsername() : null)
                 .dateCreation(rdv.getDateCreation())
                 .build();
+    }
+
+    @Transactional
+    public RendezVousDTO modifierRdvSecretaire(Long id, RendezVousDTO dto) {
+        RendezVous rdv = rdvRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("RDV", id));
+
+        rdv.setDateHeure(dto.getDateHeure());
+        rdv.setMotif(dto.getMotif());
+        rdv.setNotesMedecin(dto.getMotifModification());
+
+        rdv.setStatut(StatutRendezVous.PREVU);
+
+        return toDTO(rdvRepository.save(rdv));
+    }
+
+    @Transactional
+    public RendezVousDTO annulerParSecretaire(Long id, String motif) {
+
+        RendezVous rdv = rdvRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("RendezVous", id));
+
+        rdv.setStatut(StatutRendezVous.ANNULE);
+        rdv.setMotifAnnulation(motif);
+
+        return toDTO(rdvRepository.save(rdv));
+    }
+
+    @Transactional
+    public RendezVous getById(Long id) {
+    return rdvRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("RDV introuvable"));
+    }
+
+    @Transactional
+    public RendezVous update(Long id, Map<String, Object> data) {
+        RendezVous rdv = getById(id);
+        if (data.containsKey("dateHeure")) {
+            rdv.setDateHeure(LocalDateTime.parse((String) data.get("dateHeure")));
+        }
+        return rdvRepository.save(rdv);
     }
 }

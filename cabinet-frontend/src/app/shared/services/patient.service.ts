@@ -22,9 +22,9 @@ export class PatientService {
     return this.http.get<Patient>(`${this.apiUrl}/user/${userId}`);
   }
 
-  search(query: string): Observable<Patient[]> {
-    const params = new HttpParams().set('q', query);
-    return this.http.get<Patient[]>(`${this.apiUrl}/search`, { params });
+  search(query: string, page = 0, size = 20): Observable<Page<Patient>> {
+    const params = new HttpParams().set('q', query).set('page', page).set('size', size);
+    return this.http.get<Page<Patient>>(`${this.apiUrl}/search`, { params });
   }
 
   update(id: number, data: Partial<Patient>): Observable<ApiResponse> {
