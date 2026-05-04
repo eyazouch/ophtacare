@@ -16,10 +16,10 @@ import { LoginRequest } from '../../shared/models/models';
                 <stop offset="100%" style="stop-color:#0891b2"/>
               </linearGradient>
             </defs>
-            <rect x="26" y="8" width="12" height="48" rx="6" fill="url(#logoGradLogin)"/>
-            <rect x="8" y="26" width="48" height="12" rx="6" fill="url(#logoGradLogin)"/>
-            <circle cx="32" cy="32" r="8" fill="white" opacity="0.9"/>
-            <circle cx="32" cy="32" r="4" fill="url(#logoGradLogin)"/>
+            <path d="M4 32 C16 12, 48 12, 60 32 C48 52, 16 52, 4 32 Z" fill="white" opacity="0.12" stroke="url(#logoGradLogin)" stroke-width="2"/>
+            <circle cx="32" cy="32" r="12" fill="url(#logoGradLogin)"/>
+            <circle cx="32" cy="32" r="6" fill="#052e16"/>
+            <circle cx="36" cy="28" r="3" fill="white" opacity="0.65"/>
           </svg>
           <h1>OphtaCare</h1>
           <p>Connectez-vous à votre espace</p>

@@ -1,5 +1,6 @@
 package com.cabinet.ophtalmologie.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -10,12 +11,15 @@ import java.nio.file.Paths;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+    @Value("${app.upload.dir:uploads/analyses}")
+    private String uploadDir;
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/files/uploads/**")
-                .addResourceLocations(
-                        "file:C:/OphtaCare/cabinet-backend/uploads/"
-                        
-                );
+        Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+        String resourceLocation = "file:" + uploadPath.toString() + "/";
+
+        registry.addResourceHandler("/files/uploads/analyses/**")
+                .addResourceLocations(resourceLocation);
     }
 }

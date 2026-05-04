@@ -14,10 +14,15 @@ import { AuthService } from '../../services/auth.service';
                 <stop offset="100%" style="stop-color:#0891b2"/>
               </linearGradient>
             </defs>
-            <rect x="26" y="8" width="12" height="48" rx="6" fill="url(#logoGrad)"/>
-            <rect x="8" y="26" width="48" height="12" rx="6" fill="url(#logoGrad)"/>
-            <circle cx="32" cy="32" r="8" fill="white" opacity="0.9"/>
-            <circle cx="32" cy="32" r="4" fill="url(#logoGrad)"/>
+            <!-- Forme de l'oeil -->
+            <path d="M4 32 C16 12, 48 12, 60 32 C48 52, 16 52, 4 32 Z"
+                  fill="url(#logoGrad)" opacity="0.15" stroke="url(#logoGrad)" stroke-width="2.5" fill="white"/>
+            <!-- Iris -->
+            <circle cx="32" cy="32" r="12" fill="url(#logoGrad)"/>
+            <!-- Pupille -->
+            <circle cx="32" cy="32" r="6" fill="#052e16"/>
+            <!-- Reflet -->
+            <circle cx="36" cy="28" r="3" fill="white" opacity="0.6"/>
           </svg>
         </div>
         <div>

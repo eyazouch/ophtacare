@@ -126,9 +126,10 @@ export class ExaminerAnalyseComponent implements OnInit {
   }
 
   getFileUrl(fichierPath: string): string {
-    // fichierPath = "uploads/analyses/uuid.jpeg"
+    // fichierPath = "uuid.jpeg" (nom du fichier uniquement)
     // URL = http://localhost:8081/files/uploads/analyses/uuid.jpeg
-    return `${this.backendUrl}/files/${fichierPath}`;
+    const fileName = fichierPath.includes('/') ? fichierPath.split('/').pop() : fichierPath;
+    return `${this.backendUrl}/files/uploads/analyses/${fileName}`;
   }
 
   getSafeUrl(fichierPath: string): SafeResourceUrl {

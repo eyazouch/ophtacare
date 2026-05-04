@@ -248,7 +248,23 @@ public class RendezVousService {
                 .creePar(creePar)
                 .build();
 
-        return toDTO(rdvRepository.save(rdv));
+        RendezVous saved = rdvRepository.save(rdv);
+
+        try {
+            Utilisateur user = patient.getUtilisateur();
+            if (user != null && user.getEmail() != null) {
+                emailService.envoyerRdvUrgent(
+                    user.getEmail(),
+                    patient.getNomComplet(),
+                    saved.getDateHeure(),
+                    saved.getMotif()
+                );
+            }
+        } catch (Exception e) {
+            log.warn("Email RDV urgent non envoye : {}", e.getMessage());
+        }
+
+        return toDTO(saved);
     }
 
     @Transactional
@@ -284,7 +300,23 @@ public class RendezVousService {
             throw new BadRequestException("Impossible d'annuler un RDV déjà terminé");
         }
         rdv.setStatut(StatutRendezVous.ANNULE);
-        return toDTO(rdvRepository.save(rdv));
+        RendezVous saved = rdvRepository.save(rdv);
+
+        try {
+            Utilisateur user = saved.getPatient().getUtilisateur();
+            if (user != null && user.getEmail() != null) {
+                emailService.envoyerAnnulationRdv(
+                    user.getEmail(),
+                    saved.getPatient().getNomComplet(),
+                    saved.getDateHeure(),
+                    null
+                );
+            }
+        } catch (Exception e) {
+            log.warn("Email annulation non envoyé : {}", e.getMessage());
+        }
+
+        return toDTO(saved);
     }
 
     private LocalDateTime trouverProchainCreneauLibre() {
@@ -345,14 +377,28 @@ public class RendezVousService {
 
     @Transactional
     public RendezVousDTO annulerParSecretaire(Long id, String motif) {
-
         RendezVous rdv = rdvRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("RendezVous", id));
 
         rdv.setStatut(StatutRendezVous.ANNULE);
         rdv.setMotifAnnulation(motif);
+        RendezVous saved = rdvRepository.save(rdv);
 
-        return toDTO(rdvRepository.save(rdv));
+        try {
+            Utilisateur user = saved.getPatient().getUtilisateur();
+            if (user != null && user.getEmail() != null) {
+                emailService.envoyerAnnulationRdv(
+                    user.getEmail(),
+                    saved.getPatient().getNomComplet(),
+                    saved.getDateHeure(),
+                    motif
+                );
+            }
+        } catch (Exception e) {
+            log.warn("Email annulation non envoyé : {}", e.getMessage());
+        }
+
+        return toDTO(saved);
     }
 
     @Transactional

@@ -1,142 +1,52 @@
-# =============================================
-# OphtaCare — .gitignore
-# =============================================
-
-# =============================================
-# BACKEND — Spring Boot / Maven / Java
-# =============================================
-
-# Dossier de build Maven
+# Backend — Maven / Spring Boot
 cabinet-backend/target/
-
-# Fichiers uploadés par les patients (ne pas versionner)
 cabinet-backend/uploads/
-
-# Fichiers de configuration locaux (contiennent mots de passe)
-# ⚠️ Ne jamais committer application.properties avec de vrais mots de passe
-# cabinet-backend/src/main/resources/application.properties
-
-# Logs Spring Boot
+cabinet-backend/src/main/resources/application.properties
 cabinet-backend/*.log
 cabinet-backend/logs/
 
-# IntelliJ IDEA
+# Frontend — Angular / Node
+cabinet-frontend/node_modules/
+cabinet-frontend/dist/
+cabinet-frontend/.angular/cache/
+cabinet-frontend/.sass-cache/
+cabinet-frontend/coverage/
+cabinet-frontend/npm-debug.log*
+cabinet-frontend/yarn-error.log*
+
+# IDEs
 .idea/
 *.iml
 *.iws
 *.ipr
 out/
-.idea_modules/
-
-# Eclipse
+.vscode/
+.factorypath
 .classpath
 .project
 .settings/
 bin/
 
-# NetBeans
-nbproject/private/
-nbbuild/
-dist/
-nbdist/
-.nb-gradle/
-
-# VS Code Java
-.vscode/
-.factorypath
-
-# Maven wrapper (optionnel — garder si utilisé)
-# !cabinet-backend/.mvn/wrapper/maven-wrapper.jar
-
-# =============================================
-# FRONTEND — Angular / Node.js
-# =============================================
-
-# Dépendances npm (à réinstaller avec npm install)
-cabinet-frontend/node_modules/
-
-# Build Angular
-cabinet-frontend/dist/
-cabinet-frontend/.angular/cache/
-
-# Fichiers de cache
-cabinet-frontend/.sass-cache/
-cabinet-frontend/connect.lock/
-cabinet-frontend/coverage/
-cabinet-frontend/libpeerconnection.log
-
-# Fichiers temporaires
-cabinet-frontend/npm-debug.log*
-cabinet-frontend/yarn-error.log*
-cabinet-frontend/testem.log
-cabinet-frontend/.node_repl_history
-
-# =============================================
-# SYSTÈME D'EXPLOITATION
-# =============================================
-
-# macOS
+# OS
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V7
-.Trashes
-ehthumbs.db
-
-# Windows
 Thumbs.db
 Desktop.ini
 $RECYCLE.BIN/
-
-# Linux
 *~
 
-# =============================================
-# ÉDITEURS ET IDEs
-# =============================================
-
-# VS Code
-.vscode/
-!.vscode/extensions.json
-
-# JetBrains (IntelliJ, WebStorm)
-.idea/
-*.iml
-
-# Vim / Emacs
-*.swp
-*.swo
-*~
-\#*\#
-
-# =============================================
-# SÉCURITÉ — Ne jamais committer ces fichiers
-# =============================================
-
-# Variables d'environnement sensibles
+# Secrets
 .env
 .env.local
 .env.production
 *.env
-
-# Clés et certificats
 *.pem
 *.key
 *.p12
 *.jks
 *.keystore
 
-# =============================================
-# DIVERS
-# =============================================
-
-# Fichiers compressés temporaires
+# Divers
 *.zip
 *.tar.gz
 *.rar
-
-# Fichiers de log
 *.log
-
-# Rapports de tests
-cabinet-frontend/coverage/

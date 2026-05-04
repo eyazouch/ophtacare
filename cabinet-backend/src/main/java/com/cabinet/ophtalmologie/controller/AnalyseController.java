@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/analyses")
-@RequiredArgsConstructor
+@RequiredArgsConstructor // Lombok pour le constructeur avec les dépendances finales
 public class AnalyseController {
 
     private final AnalyseService analyseService;

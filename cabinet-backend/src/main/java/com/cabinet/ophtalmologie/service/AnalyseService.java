@@ -80,7 +80,7 @@ public class AnalyseService {
         Analyse analyse = Analyse.builder()
                 .patient(patient)
                 .typeAnalyse(typeAnalyse)
-                .fichierPath(uploadDir + "/" + fichierNomUnique)
+                .fichierPath(fichierNomUnique)
                 .fichierNom(fichierNomOriginal)
                 .statut(StatutAnalyse.EN_ATTENTE)
                 .build();

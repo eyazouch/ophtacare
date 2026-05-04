@@ -64,6 +64,109 @@ public class EmailService {
         }
     }
 
+    public void envoyerRdvUrgent(String emailPatient, String nomPatient, LocalDateTime dateHeure, String motif) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(
+                    message,
+                    MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                    "UTF-8"
+            );
+
+            helper.setFrom("khlif.oumayma30@gmail.com", "OphtaCare");
+            helper.setTo(emailPatient);
+            helper.setSubject("Rendez-vous urgent planifie pour vous — OphtaCare");
+
+            String motifLigne = (motif != null && !motif.isBlank())
+                    ? "<p><strong>Motif :</strong> " + motif + "</p>"
+                    : "";
+
+            String contenu = """
+                <div style="font-family: Arial, sans-serif; line-height:1.6;">
+                    <p style="background:#fef3c7;border-left:4px solid #f59e0b;padding:12px 16px;border-radius:4px;">
+                        <strong>Attention — Rendez-vous urgent</strong>
+                    </p>
+
+                    <p>Bonjour <strong>%s</strong>,</p>
+
+                    <p>Suite a l'examen de vos analyses, votre medecin a estime que votre etat
+                    necessite une consultation urgente. Un rendez-vous a ete planifie pour vous :</p>
+
+                    <p style="background:#f0fdf4;border-left:4px solid #059669;padding:12px 16px;border-radius:4px;">
+                        <strong>Date et heure :</strong> %s
+                    </p>
+
+                    %s
+
+                    <p>Merci de vous presenter au cabinet a l'heure indiquee. En cas d'empechement,
+                    veuillez nous contacter dans les plus brefs delais.</p>
+
+                    <p>Cordialement,<br><strong>Cabinet OphtaCare</strong></p>
+                </div>
+                """.formatted(
+                    nomPatient,
+                    dateHeure.format(DateTimeFormatter.ofPattern("dd/MM/yyyy 'a' HH:mm")),
+                    motifLigne
+                );
+
+            helper.setText(contenu, true);
+            mailSender.send(message);
+            log.info("Email RDV urgent envoye a {}", emailPatient);
+
+        } catch (Exception e) {
+            log.error("Erreur envoi email RDV urgent a {} : {}", emailPatient, e.getMessage());
+        }
+    }
+
+    public void envoyerAnnulationRdv(String emailPatient, String nomPatient, LocalDateTime dateHeure, String motif) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(
+                    message,
+                    MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                    "UTF-8"
+            );
+
+            helper.setFrom("khlif.oumayma30@gmail.com", "OphtaCare");
+            helper.setTo(emailPatient);
+            helper.setSubject("Annulation de votre rendez-vous médical — OphtaCare");
+
+            String motifLigne = (motif != null && !motif.isBlank())
+                    ? "<p><strong>Motif de l'annulation :</strong> " + motif + "</p>"
+                    : "";
+
+            String contenu = """
+                <div style="font-family: Arial, sans-serif; line-height:1.6;">
+
+                    <p>Bonjour <strong>%s</strong>,</p>
+
+                    <p>Nous vous informons que votre rendez-vous médical prévu le
+                    <strong>%s</strong> a été <strong style="color:#dc2626;">annulé</strong>.</p>
+
+                    %s
+
+                    <p>Pour reprogrammer un nouveau rendez-vous, veuillez vous connecter
+                    à votre espace patient sur <strong>OphtaCare</strong>.</p>
+
+                    <p>Nous vous prions de nous excuser pour la gêne occasionnée.</p>
+
+                    <p>Cordialement,<br><strong>Cabinet OphtaCare</strong></p>
+                </div>
+                """.formatted(
+                    nomPatient,
+                    dateHeure.format(DateTimeFormatter.ofPattern("dd/MM/yyyy à HH:mm")),
+                    motifLigne
+                );
+
+            helper.setText(contenu, true);
+            mailSender.send(message);
+            log.info("Email annulation envoyé à {}", emailPatient);
+
+        } catch (Exception e) {
+            log.error("Erreur envoi email annulation à {} : {}", emailPatient, e.getMessage());
+        }
+    }
+
     public void envoyerPropositionAlternatives(String email, String nom, List<String> creneaux) {
 
         try {

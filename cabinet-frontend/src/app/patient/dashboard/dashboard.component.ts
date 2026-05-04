@@ -11,7 +11,7 @@ import { RendezVous, Analyse, Patient } from '../../shared/models/models';
   template: `
     <div class="page-header">
       <div>
-        <h1>Bonjour, {{ patient?.prenom || userName }} 👋</h1>
+        <h1>Bonjour, {{ patient?.prenom || userName }}</h1>
         <p style="color:#64748b;font-size:14px;margin-top:4px;">
           {{ today | date:'EEEE dd MMMM yyyy' }}
         </p>
@@ -32,7 +32,7 @@ import { RendezVous, Analyse, Patient } from '../../shared/models/models';
         </div>
         <div>
           <h3 style="color:#dc2626;font-size:16px;font-weight:700;">
-            ⚠️ Rendez-vous urgent requis !
+            Rendez-vous urgent requis !
           </h3>
           <p style="color:#991b1b;font-size:13px;">
             Le médecin a examiné vos analyses et nécessite de vous voir en urgence.
@@ -61,7 +61,7 @@ import { RendezVous, Analyse, Patient } from '../../shared/models/models';
         </div>
         <div>
           <h3 style="color:#065f46;font-size:16px;font-weight:700;">
-            ✅ Rendez-vous confirmé !
+            Rendez-vous confirmé !
           </h3>
           <p style="color:#047857;font-size:13px;">
             La secrétaire a approuvé votre demande de rendez-vous.

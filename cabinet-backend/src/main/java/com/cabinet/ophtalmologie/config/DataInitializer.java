@@ -41,7 +41,7 @@ public class DataInitializer implements CommandLineRunner {
                     .actif(true)
                     .build();
             utilisateurRepository.save(medecin);
-            log.info("✅ Compte MÉDECIN créé — username: medecin / password: medecin123");
+            log.info("Compte MEDECIN cree -- username: medecin / password: medecin123");
         }
 
         // Créer le compte Secrétaire par défaut
@@ -54,7 +54,7 @@ public class DataInitializer implements CommandLineRunner {
                     .actif(true)
                     .build();
             utilisateurRepository.save(secretaire);
-            log.info("✅ Compte SECRÉTAIRE créé — username: secretaire / password: secretaire123");
+            log.info("Compte SECRETAIRE cree -- username: secretaire / password: secretaire123");
         }
     }
 
@@ -115,7 +115,7 @@ public class DataInitializer implements CommandLineRunner {
                         .build());
             }
 
-            log.info("✅ Créneaux par défaut créés (Lundi-Vendredi 8h-12h/14h-18h + Samedi 8h-12h)");
+            log.info("Creneaux par defaut crees (Lundi-Vendredi 8h-12h/14h-18h + Samedi 8h-12h)");
         }
     }
 }
